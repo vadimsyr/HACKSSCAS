@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровая витрина</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Анимация метели */
+        .snowflakes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2; /* Ставим снег за всеми элементами */
+        }
+
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: snow 5s linear infinite;
+            box-shadow: 0 0 15px white;
+        }
+
+        @keyframes snow {
+            0% { top: -10px; left: 50%; transform: translateX(-50%); }
+            100% { top: 100%; }
+        }
+
+        /* Настроим снежинки с разными размерами и скоростью */
+        .snowflake:nth-child(1) { width: 10px; height: 10px; animation-duration: 4s; left: 20%; }
+        .snowflake:nth-child(2) { width: 15px; height: 15px; animation-duration: 6s; left: 30%; }
+        .snowflake:nth-child(3) { width: 12px; height: 12px; animation-duration: 5s; left: 40%; }
+        .snowflake:nth-child(4) { width: 8px; height: 8px; animation-duration: 7s; left: 50%; }
+        .snowflake:nth-child(5) { width: 14px; height: 14px; animation-duration: 3s; left: 60%; }
+        .snowflake:nth-child(6) { width: 10px; height: 10px; animation-duration: 5s; left: 70%; }
+        .snowflake:nth-child(7) { width: 16px; height: 16px; animation-duration: 8s; left: 80%; }
+        .snowflake:nth-child(8) { width: 18px; height: 18px; animation-duration: 9s; left: 90%; }
+
+        /* Окна устройства и переключения языков */
+        .transparent-window {
+            position: fixed;
+            top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            font-size: 18px;
+            z-index: 2;
+            transition: top 0.3s ease;
+        }
+
+        .top-left {
+            left: 20px;
+        }
+
+        .top-right {
+            right: 20px;
+        }
+
+        /* Контейнер карточек с играми */
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Для мобильной версии две игры в ряду */
+            gap: 20px;
+            padding: 20px;
+            z-index: 1;
+            max-width: 100%;
+            margin-top: 120px;
+            box-sizing: border-box;
+            overflow: auto;
+        }
+
+        .game-card {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+            max-width: 250px;
+            margin: 0 auto;
+            opacity: 1; /* Убираем прозрачность карточек */
+            border: 2px solid rgba(255, 255, 255, 0.3); /* Полупрозрачные серые рамки */
+        }
+
+        .game-card img {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            border-radius: 10px;
+            object-fit: cover;
+            opacity: 1; /* Сохраняем изображения непрозрачными */
+        }
+
+        .game-card h3 {
+            color: white;
+            margin: 10px 0;
+            opacity: 1; /* Текст остается непрозрачным */
+        }
+
+        .btn-open {
+            background-color: green;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            opacity: 1; /* Кнопки остаются непрозрачными */
+        }
+
+        .btn-open:hover {
+            background-color: darkgreen;
+        }
+
+        /* Для больших экранов уменьшаем размеры карточек */
+        @media (min-width: 768px) {
+            .game-container {
+                grid-template-columns: repeat(4, 1fr); /* Четыре игры в ряду на экранах больше 768px */
+            }
+
+            .game-card {
+                max-width: 300px; /* Увеличиваем размер карточки на большом экране */
+            }
+        }
+
+        /* Для адаптивности */
+        @media (max-width: 768px) {
+            .game-container {
+                grid-template-columns: repeat(2, 1fr); /* Две игры в ряду на мобильных устройствах */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Анимация снега -->
+<div class="snowflakes">
+    <div class="snowflake" style="width: 10px; height: 10px; animation-duration: 4s;"></div>
+    <div class="snowflake" style="width: 15px; height: 15px; animation-duration: 6s;"></div>
+    <div class="snowflake" style="width: 12px; height: 12px; animation-duration: 5s;"></div>
+    <div class="snowflake" style="width: 8px; height: 8px; animation-duration: 7s;"></div>
+    <div class="snowflake" style="width: 14px; height: 14px; animation-duration: 3s;"></div>
+    <div class="snowflake" style="width: 10px; height: 10px; animation-duration: 5s;"></div>
+    <div class="snowflake" style="width: 16px; height: 16px; animation-duration: 8s;"></div>
+    <div class="snowflake" style="width: 18px; height: 18px; animation-duration: 9s;"></div>
+</div>
+
+<!-- Окно устройства -->
+<div class="transparent-window top-left" id="device-type">
+    🖥ПК
+</div>
+
+<!-- Переключение языков -->
+<div class="transparent-window top-right" id="language-selector">
+    🇷🇺
+</div>
+
+<!-- Контейнер с играми -->
+<div class="game-container">
+    <div class="game-card">
+        <img src="static/1.png" alt="Mines">
+        <h3>Mines</h3>
+        <button class="btn-open" onclick="openGame('mines')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static\5.png" alt="Bombucks">
+        <h3>Bombucks</h3>
+        <button class="btn-open" onclick="openGame('bombucks')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static/3.png" alt="Coin Flip">
+        <h3>Coin Flip</h3>
+        <button class="btn-open" onclick="openGame('coinflip')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static/4.png" alt="Brawl Pirates">
+        <h3>Brawl Pirates</h3>
+        <button class="btn-open" onclick="openGame('brawlpirates')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static/2.png" alt="Royal Mines">
+        <h3>Royal Mines</h3>
+        <button class="btn-open" onclick="openGame('royalmines')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static/penafon.png" alt="Penalty Shoot">
+        <h3>Penalty Shoot</h3>
+        <button class="btn-open" onclick="openGame('penaltyshoot')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static/mimines.jpg" alt="MI Mines">
+        <h3>MI Mines</h3>
+        <button class="btn-open" onclick="openGame('mimines')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static/footxiconca.png" alt="Football X">
+        <h3>Football X</h3>
+        <button class="btn-open" onclick="openGame('footballx')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static\6.png" alt="Aviator">
+        <h3>Aviator</h3>
+        <button class="btn-open" onclick="openGame('aviator')">Открыть</button>
+    </div>
+    <div class="game-card">
+        <img src="static\7.png" alt="Lacky Jet">
+        <h3>Lacky Jet</h3>
+        <button class="btn-open" onclick="openGame('lackyjet')">Открыть</button>
+    </div>
+</div>
+
+<script>
+    // Функция для переключения языка
+    const languageSelector = document.getElementById('language-selector');
+    let currentLanguage = 'ru';
+
+    languageSelector.addEventListener('click', () => {
+        if (currentLanguage === 'ru') {
+            currentLanguage = 'en';
+            languageSelector.innerHTML = '🇺🇸';
+            document.querySelectorAll('.btn-open').forEach(button => button.innerHTML = 'OPEN');
+        } else if (currentLanguage === 'en') {
+            currentLanguage = 'hi';
+            languageSelector.innerHTML = '🇮🇳';
+            document.querySelectorAll('.btn-open').forEach(button => button.innerHTML = 'खुला');
+        } else {
+            currentLanguage = 'ru';
+            languageSelector.innerHTML = '🇷🇺';
+            document.querySelectorAll('.btn-open').forEach(button => button.innerHTML = 'Открыть');
+        }
+    });
+
+    // Функция для определения устройства
+    const deviceType = document.getElementById('device-type');
+    if (navigator.userAgent.match(/Android/i)) {
+        deviceType.innerHTML = '📱Android';
+    } else if (navigator.userAgent.match(/iPhone/i)) {
+        deviceType.innerHTML = '🍏Ios';
+    }
+
+    // Функция открытия игры
+    function openGame(game) {
+        const gameUrls = {
+            mines: {
+                ios: './ios/Minesios/Mines.html',
+                other: '/signalbotNewweb/Game/mines/Mines.html' // Ссылка для других платформ
+            },
+            bombucks: {
+                ios: './ios/iosbombucks/bombucksios.html',
+                other: './Game/bombucks/bombucks.html'
+            },
+            coinflip: {
+                ios: './ios/Coinflipios/coinflipios.html',
+                other: './Game/coinflip/coinflip.html'
+            },
+            brawlpirates: {
+                ios: './ios/brawlpiratesios/brawlpiratesios.html',
+                other: './Game/brawlpirates/brawlpirates.html'
+            },
+            royalmines: {
+                ios: './ios/Royalminesios/royalminesios.html',
+                other: './Game/royalmines/royalmines.html'
+            },
+            penaltyshoot: {
+                ios: './ios/penaltyshootios/penaltyshootios.html',
+                other: './Game/penaltyshoot/penaltyshoot.html'
+            },
+            mimines: {
+                ios: './ios/miminesios/miminesios.html',
+                other: './Game/mimines/mimines.html'
+            },
+            footballx: {
+                ios: './ios/footballxios/footballxios.html',
+                other: './Game/footballx/footballx.html'
+            },
+            aviator: {
+                ios: './ios/Aviatorios/aviatorios.html',
+                other: './Game/aviator/aviator.html'
+            },
+            lackyjet: {
+                ios: './ios/lackyjetios/lackyjetios.html',
+                other: './Game/lackyjet/LackyJet.html'
+            }
+        };
+
+        // Определяем устройство
+        const platform = navigator.userAgent.match(/iPhone/i) ? 'ios' : 'other';
+
+        // Открытие игры
+        if (gameUrls[game]) {
+            window.location.href = gameUrls[game][platform];
+        } else {
+            alert('Игра не найдена!');
+        }
+    }
+
+    // Скролл анимация
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function() {
+        let scrollTop = window.scrollY || document.documentElement.scrollTop;
+        if (scrollTop > lastScrollTop) {
+            // Скрытие окон при прокрутке вниз
+            document.getElementById('device-type').style.top = "-60px";
+            document.getElementById('language-selector').style.top = "-60px";
+        } else {
+            // Появление окон при прокрутке вверх
+            document.getElementById('device-type').style.top = "10px";
+            document.getElementById('language-selector').style.top = "10px";
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+</script>
+
+</body>
+</html>
